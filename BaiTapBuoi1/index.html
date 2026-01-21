@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Sản Phẩm</title>
+    <style>
+        :root {
+            --primary: #2563eb;      /* xanh dương chính */
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --bg: #f0f9ff;
+            --text: #1e293b;
+            --gray: #64748b;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .intro {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #output {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            min-height: 300px;
+        }
+
+        #output h2 {
+            color: var(--primary);
+            margin-bottom: 16px;
+            font-size: 1.4rem;
+        }
+
+        pre {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        @media (max-width: 600px) {
+            button {
+                flex: 1 1 45%;
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Quản Lý Sản Phẩm</h1>
+            <p class="intro">Nhấn vào các chức năng bên dưới để xem thông tin chi tiết (kết quả cũng được in ra console để kiểm tra).</p>
+        </header>
+
+        <div class="controls">
+            <button onclick="showNameAndPrice()">Danh sách tên & giá</button>
+            <button onclick="showInStock()">Sản phẩm còn hàng</button>
+            <button onclick="showHasExpensive()">Có sản phẩm > 30 triệu?</button>
+            <button onclick="showAccessoriesStatus()">Tất cả Accessories đang bán?</button>
+            <button onclick="showTotalValue()">Tổng giá trị kho hàng</button>
+            <button onclick="showProductList()">Danh sách sản phẩm & trạng thái</button>
+            <button onclick="showFirstProductProps()">Thuộc tính sản phẩm đầu tiên</button>
+            <button onclick="showAvailableInStock()">Sản phẩm đang bán & còn hàng</button>
+        </div>
+
+        <div id="output">
+            <h2>Kết quả</h2>
+            <pre id="result">Nhấn một nút bên trên để xem kết quả...</pre>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

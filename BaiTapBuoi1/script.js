@@ -20,109 +20,94 @@ const products = [
     new Product(8, "Chuột Logitech MX Master 3", 2800000, 0, "Accessories", true),
 ];
 
-// Câu 3: Mảng chỉ chứa name và price
-const nameAndPrice = products.map(product => ({
-    name: product.name,
-    price: product.price
-}));
+const totalInventoryValue = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
 
-// Câu 4: Sản phẩm còn hàng (quantity > 0)
-const inStock = products.filter(p => p.quantity > 0);
+// Render tất cả sản phẩm ban đầu
+function renderProducts(filteredProducts = products) {
+    const grid = document.getElementById('productsGrid');
+    grid.innerHTML = '';
 
-// Câu 5: Có ít nhất một sản phẩm giá > 30 triệu không
-const hasExpensiveProduct = products.some(p => p.price > 30000000);
-const expensiveProducts = products
-    .filter(p => p.price > 30000000)
-    .map(p => `${p.name} - ${p.price.toLocaleString('vi-VN')} VNĐ`);
-
-// Câu 6: Tất cả sản phẩm Accessories có đang bán không
-const accessories = products.filter(p => p.category === "Accessories");
-const allAccessoriesAvailable = accessories.every(p => p.isAvailable === true);
-
-// Câu 7: Tổng giá trị kho hàng
-const totalInventoryValue = products.reduce((total, p) => {
-    return total + (p.price * p.quantity);
-}, 0);
-
-// Câu 8: Duyệt for...of (in console)
-for (const product of products) {
-    const status = product.isAvailable ? "Đang bán" : "Ngừng bán";
-    console.log(`${product.name} - ${product.category} - ${status}`);
-}
-
-// Câu 9: for...in với sản phẩm đầu tiên (in console)
-for (const key in products[0]) {
-    console.log(`${key}: ${products[0][key]}`);
-}
-
-// Câu 10: Danh sách tên sản phẩm đang bán và còn hàng
-const availableAndInStockNames = products
-    .filter(p => p.isAvailable === true && p.quantity > 0)
-    .map(p => p.name);
-
-
-
-function showNameAndPrice() {
-    const result = JSON.stringify(nameAndPrice, null, 2);
-    document.getElementById('result').textContent = "Danh sách tên và giá sản phẩm:\n\n" + result;
-    console.log("Danh sách tên & giá:", nameAndPrice);
-}
-
-function showInStock() {
-    const result = inStock.map(p => `${p.name} (${p.quantity} cái)`).join('\n');
-    document.getElementById('result').textContent = "Sản phẩm còn hàng trong kho:\n\n" + result;
-    console.log("Sản phẩm còn hàng:", inStock);
-}
-
-function showHasExpensive() {
-    let output = `Có sản phẩm giá trên 30.000.000 VNĐ không? ${hasExpensiveProduct ? "Có" : "Không có"}\n\n`;
-    
-    if (hasExpensiveProduct) {
-        output += "Danh sách sản phẩm giá cao:\n";
-        output += expensiveProducts.join('\n');
-    } else {
-        output += "Không có sản phẩm nào giá trên 30 triệu.";
+    if (filteredProducts.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #64748b;">Không tìm thấy sản phẩm phù hợp.</p>';
+        return;
     }
-    
-    document.getElementById('result').textContent = output;
-    console.log("Sản phẩm > 30 triệu:", expensiveProducts);
+
+    filteredProducts.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <div class="product-info">
+                <div class="product-name">${p.name}</div>
+                <div class="product-price">${p.price.toLocaleString('vi-VN')} VNĐ</div>
+                <div class="product-detail">Danh mục: ${p.category}</div>
+                <div class="product-detail">Tồn kho: ${p.quantity} cái</div>
+                <div class="product-detail status ${p.quantity > 0 ? 'in-stock' : 'out-stock'}">
+                    ${p.quantity > 0 ? 'Còn hàng' : 'Hết hàng'}
+                </div>
+                <div class="product-detail status ${p.isAvailable ? 'available' : 'unavailable'}">
+                    ${p.isAvailable ? 'Đang bán' : 'Ngừng bán'}
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
 }
 
-function showAccessoriesStatus() {
-    const text = allAccessoriesAvailable ? "Có – Tất cả đang được bán" : "Không – Có một số không bán";
-    document.getElementById('result').textContent = `Tất cả sản phẩm Accessories có đang bán? ${text}`;
-    console.log("Accessories status:", allAccessoriesAvailable);
+// Áp dụng tất cả filters
+function applyFilters() {
+    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+    const category = document.getElementById('categoryFilter').value;
+    const inStock = document.getElementById('inStockFilter').checked;
+    const available = document.getElementById('availableFilter').checked;
+
+    let filtered = products;
+
+    // Lọc theo tên
+    if (search) {
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+    }
+
+    // Lọc theo danh mục
+    if (category !== 'all') {
+        filtered = filtered.filter(p => p.category === category);
+    }
+
+    // Lọc còn hàng
+    if (inStock) {
+        filtered = filtered.filter(p => p.quantity > 0);
+    }
+
+    // Lọc đang bán
+    if (available) {
+        filtered = filtered.filter(p => p.isAvailable);
+    }
+
+    renderProducts(filtered);
 }
 
+// Reset filters
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('categoryFilter').value = 'all';
+    document.getElementById('inStockFilter').checked = false;
+    document.getElementById('availableFilter').checked = false;
+    renderProducts(products);
+}
+
+// Hiển thị tổng giá trị kho
 function showTotalValue() {
-    document.getElementById('result').textContent = `Tổng giá trị kho hàng: ${totalInventoryValue.toLocaleString('vi-VN')} VNĐ`;
-    console.log("Tổng giá trị kho:", totalInventoryValue);
+    document.getElementById('stats').innerHTML = `
+        <strong>Tổng giá trị kho hàng:</strong> ${totalInventoryValue.toLocaleString('vi-VN')} VNĐ
+        <br><small>(Tính theo tất cả sản phẩm, bất kể trạng thái)</small>
+    `;
 }
 
-function showProductList() {
-    let output = "Danh sách sản phẩm:\n\n";
-    for (const p of products) {
-        const status = p.isAvailable ? "Đang bán" : "Ngừng bán";
-        output += `${p.name} - ${p.category} - ${status}\n`;
-    }
-    document.getElementById('result').textContent = output;
-    console.log("Danh sách sản phẩm & trạng thái: xem console");
-}
-
-function showFirstProductProps() {
-    let output = "Thuộc tính của sản phẩm đầu tiên:\n\n";
-    for (const key in products[0]) {
-        output += `${key}: ${products[0][key]}\n`;
-    }
-    document.getElementById('result').textContent = output;
-}
-
-function showAvailableInStock() {
-    const result = availableAndInStockNames.join('\n');
-    document.getElementById('result').textContent = "Sản phẩm đang bán và còn hàng:\n\n" + result;
-    console.log("Sản phẩm đang bán & còn hàng:", availableAndInStockNames);
-}
-
+// Khởi tạo
 window.onload = () => {
-    showProductList();
+    renderProducts();
+    document.getElementById('searchInput').addEventListener('keyup', applyFilters);
+    // Các select/checkbox cũng trigger khi thay đổi
+    document.querySelectorAll('#categoryFilter, #inStockFilter, #availableFilter').forEach(el => {
+        el.addEventListener('change', applyFilters);
+    });
 };
